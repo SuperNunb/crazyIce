@@ -6,9 +6,10 @@ vec = pg.math.Vector2
 class Spritesheet:
     def __init__(self, filename):
         self.spritesheet = pg.image.load(filename).convert()
-    def getImage(self, x, y, w, h):
+    def getImage(self, x, y, w, h, relWidth, relHeight):
         image = pg.Surface((w,h))
         image.blit(self.spritesheet, (0,0), (x,y,w,h))
+        image = pg.transform.scale(image, (int(WIDTH / relWidth), int(HEIGHT / relHeight)))
         return image
 
 class Avatar(pg.sprite.Sprite):
@@ -67,11 +68,12 @@ class Avatar(pg.sprite.Sprite):
         if hits and not self.jumping:
             self.jumping = True
             self.vel.y = -AVATAR_JUMP
+            #self.game.jump_sound.play()
 
     def jumpCut(self):
         if self.jumping:
-            if self.vel.y < -4:
-                self.vel.y = -4
+            if self.vel.y < (0 - HEIGHT / 150):
+                self.vel.y = (0 - HEIGHT / 150)
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h, sheetPreset):
@@ -83,14 +85,14 @@ class Platform(pg.sprite.Sprite):
         self.pos = vec(x,y)
         self.rect = self.image.get_rect()
         self.rect.midtop = self.pos
-        if random.randrange(100) < POW_CHANCE and w < WIDTH:
+        if w < WIDTH:
             Coin(self.game, self)
 
 class Baddie(pg.sprite.Sprite):
     def __init__(self, game):
         self.groups = game.all_sprites
-        self.width = 34
-        self.height = 37
+        #self.width = 34
+        #self.height = 37
         self.game = game
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = self.game.badd
@@ -120,35 +122,42 @@ class Coin(pg.sprite.Sprite):
     def __init__(self, game, plat):
         self.groups = game.all_sprites, game.coins
         pg.sprite.Sprite.__init__(self, self.groups)
+        self.coinValue = 5000
+        self.glowing = random.choice([True,False,False,False,False,False,False,False,False,False])
         self.game = game
         self.plat = plat
         self.image = self.game.coin
         self.image.set_colorkey(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.plat.rect.centerx
-        self.rect.bottom = self.plat.rect.top - 12
+        self.rect.bottom = self.plat.rect.top - (HEIGHT / 50)
 
     def update(self):
-        pass
+        if self.glowing:
+            self.image = self.game.glowCoin
+            self.coinValue = 10000
+            self.image.set_colorkey(YELLOW)
 
 class Evilo(pg.sprite.Sprite):
     def __init__(self, game):
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.evilos
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = self.game.evil
         self.image.set_colorkey(YELLOW)
         self.rect = self.image.get_rect()
-        self.pos = vec(0, random.randrange(int(WIDTH / 12), int(WIDTH / 5)))
+        self.pos = vec(random.choice([0, WIDTH]), random.choice([(HEIGHT / 6.818),(HEIGHT / 4.762),(HEIGHT / 3.659),(HEIGHT / 2.971),(HEIGHT / 2.5),(HEIGHT / 2.158),(HEIGHT / 1.899)]))
         self.vel = vec(self.game.baddie_vel / 3 * 2, 0)
+        if self.pos.x == WIDTH:
+            self.vel.x *= -1
 
     def update(self):
         self.rect.center = self.pos
         self.pos += self.vel
         if self.pos.x > WIDTH:
-            self.pos = vec(0, random.randrange(int(WIDTH / 12), int(WIDTH / 5)))
+            self.pos.x = 0
         if self.pos.x < 0:
-            self.pos = vec(WIDTH, random.randrange(int(WIDTH / 12), int(WIDTH / 5)))
+            self.pos.x = WIDTH
 
         if self.vel.x > 0:
             self.image = self.game.evilFlip
