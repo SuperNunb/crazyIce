@@ -15,7 +15,6 @@ MUSIC3 = "harpsichord_chorale.ogg"
 MUSIC1 = "tiptoe_celesta.ogg"
 MUSIC2 = "sunset_chorale.ogg"
 COIN_SOUND = "coin.ogg"
-JUMP_SOUND = "jump.ogg"
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
