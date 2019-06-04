@@ -122,7 +122,7 @@ class Coin(pg.sprite.Sprite):
     def __init__(self, game, plat):
         self.groups = game.all_sprites, game.coins
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.coinValue = 5000
+        self.coinValue = 50
         self.glowing = random.choice([True,False,False,False,False,False,False,False,False,False])
         self.game = game
         self.plat = plat
@@ -135,7 +135,7 @@ class Coin(pg.sprite.Sprite):
     def update(self):
         if self.glowing:
             self.image = self.game.glowCoin
-            self.coinValue = 10000
+            self.coinValue = 100
             self.image.set_colorkey(YELLOW)
 
 class Evilo(pg.sprite.Sprite):

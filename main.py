@@ -34,7 +34,6 @@ class Game:
         self.evilie = False
         self.idlable = True
         self.eviloAmount = -0.5
-        self.stopwatchTimer = 0.00
         
     def load_data(self):
         self.dir = path.dirname(__file__)
@@ -51,7 +50,6 @@ class Game:
         pg.mixer.music.load(MUSIC1)
         pg.mixer.music.set_volume(0.175)
         self.coin_sound = pg.mixer.Sound(COIN_SOUND)
-        self.jump_sound = pg.mixer.Sound(JUMP_SOUND)
 
         self.avat1 = self.spritesheet.getImage(709, 202, 29, 50, 34.48, 12.00)
         self.avat1Flip = self.spritesheet.getImage(678, 202, 29, 50, 34.48, 12.00)
@@ -75,6 +73,7 @@ class Game:
         self.pse = self.spritesheet.getImage(127, 202, 90, 50, 11.11, 12.00)
         self.leftArrow =  self.spritesheet.getImage(397, 202, 40, 40, 25.00, 15.00)
         self.rightArrow =  self.spritesheet.getImage(481, 202, 40, 40, 25.00, 15.00)
+        self.telBst = self.spritesheet.getImage(854,201,50,19,20.00,31.58)
 
     def new(self):
         self.platforms = pg.sprite.Group()
@@ -93,7 +92,6 @@ class Game:
                 self.baddie_vel += (WIDTH / 2000)
                 Evilo(self)
                 eviloIndex += 1
-
     def run(self):
         if self.running == False:
             return
@@ -145,9 +143,8 @@ class Game:
         if self.level >= 2:
             self.evilie = True
 
-        self.stopwatchTimer += (1/90)
-        self.score -= round(self.stopwatchTimer)
-        if self.score < 0: self.score = 0 
+        self.score -= (1/8)
+        if self.score < 0: self.score = 0
 
     def events(self):
         for event in pg.event.get():
@@ -187,9 +184,7 @@ class Game:
         
     def restart_soft(self):
         self.avatar.kill()
-        self.baddie.kill()
         self.avatar = Avatar(self, self.currentAvat)
-        self.baddie = Baddie(self)
 
     def death(self):
         self.lives -= 1
@@ -213,7 +208,7 @@ class Game:
             idle(1.5)
             self.drawText("USE THE LEFT, RIGHT, AND UP ARROW KEYS TO MOVE", int(HEIGHT / 33.333), BLACK, WIDTH / 2, HEIGHT / 11, self.font2)
             idle(1.5)
-            self.drawText("HIGH SCORE: " + str(self.highscore), int(HEIGHT / 16.667), BLUE, WIDTH / 2, HEIGHT / 5 * 4, self.font1)
+            self.drawText("HIGH SCORE: " + str(round(self.highscore)), int(HEIGHT / 16.667), BLUE, WIDTH / 2, HEIGHT / 5 * 4, self.font1)
             idle(1.5)
             avatar = self.currentAvatFlip
             avatar.set_colorkey(YELLOW)
@@ -224,7 +219,7 @@ class Game:
             self.pse.set_colorkey(YELLOW)
             self.screen.blit(self.esc, (WIDTH / 24, HEIGHT / 24))
             self.screen.blit(self.pse, (WIDTH / 24, HEIGHT / 24 + (HEIGHT / 8)))
-            self.drawText("PRESS ANY KEY TO BEGIN", int(HEIGHT / 16.667), NAVY_BLUE_GREY, WIDTH / 2, HEIGHT / 3 * 2, self.font2)
+            self.drawText("PRESS SPACE TO BEGIN", int(HEIGHT / 16.667), NAVY_BLUE_GREY, WIDTH / 2, HEIGHT / 3 * 2, self.font2)
             
             self.idlable = False
             
@@ -236,8 +231,7 @@ class Game:
                     if event.key == pg.K_ESCAPE:
                         self.running = False
                         self.intro = False
-                        
-                    else:
+                    if event.key == pg.K_SPACE:
                         time.sleep(0.35)
                         if not self.paused and not self.playing:
                             self.intro = False
@@ -345,9 +339,9 @@ class Game:
         self.restart()
 
     def hud(self):
-        lifeLabel = str("LIVES: " + str(self.lives))
+        lifeLabel = str("LIVES: " + str(round(self.lives)))
         levelLabel = str("LEVEL: " + str(self.level))
-        scoreLabel = str("SCORE: " + str(self.score))
+        scoreLabel = str("SCORE: " + str(round(self.score)))
         self.drawText(levelLabel, int(HEIGHT / 20), NAVY_BLUE_GREY, int(WIDTH / 12), int(HEIGHT / 12), self.font1)
         self.drawText(lifeLabel, int(HEIGHT / 20), NAVY_BLUE_GREY, int(WIDTH / 12 * 11), int(HEIGHT / 12), self.font1)
         self.drawText(scoreLabel, int(HEIGHT / 20), NAVY_BLUE_GREY, int(WIDTH / 2), int(HEIGHT / 12), self.font1)
