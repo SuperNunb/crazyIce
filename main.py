@@ -157,8 +157,6 @@ class Game:
                     self.pause()
                 if event.key == pg.K_p:
                     self.pause()
-                if event.key == pg.K_b:
-                    self.beatTheGame()
             if event.type == pg.KEYUP:
                 if event.key == pg.K_UP or event.key == pg.K_SPACE:
                     self.avatar.jumpCut()
